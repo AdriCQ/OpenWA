@@ -13,6 +13,14 @@ RUN apt-get update && apt-get install -y \
     g++ \
     && rm -rf /var/lib/apt/lists/*
 
+# Skip Puppeteer's postinstall Chrome download — we install Chromium via apt in the
+# production stage and point Puppeteer at /usr/bin/chromium (see PUPPETEER_EXECUTABLE_PATH).
+# The download URL is also rate-limited and frequently returns 403 inside build sandboxes.
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_SKIP_DOWNLOAD=true \
+    npm_config_audit=false \
+    npm_config_fund=false
+
 # Copy package files
 COPY package*.json ./
 
